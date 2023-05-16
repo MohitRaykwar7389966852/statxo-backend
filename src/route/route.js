@@ -10,6 +10,7 @@ const {
 	createActionTable,
 } = require("../controller/actionTracker");
 const { helpDesk } = require("../controller/helpDesk");
+const { fileManager,getFiles,deleteFiles,updateFiles } = require("../controller/fileManager");
 
 //statxo
 //action tracker
@@ -23,5 +24,11 @@ router.post("/actionadd", actionAdd);
 router.get("/actionapproval/:Id", actionApproval);
 //help
 router.post("/helpdesk", helpDesk);
+
+//file-manager
+router.post("/filemanager",fileManager);
+router.get("/getFiles",getFiles);
+router.put("/updateFiles",updateFiles);
+router.delete("/deleteFiles",deleteFiles);
 
 module.exports = router;
