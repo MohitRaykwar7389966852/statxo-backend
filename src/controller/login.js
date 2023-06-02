@@ -14,8 +14,8 @@ var transport = nodemailer.createTransport({
     requireTLS: true,
     tls: { ciphers: "SSLv3" },
     auth: {
-        user: "mraykwar99@gmail.com",
-        pass: "byond51+",
+        user: process.env.STATXO_MAIL,
+        pass: process.env.STATXO_MAIL_PASS,
     },
 });
 
