@@ -34,8 +34,8 @@ const uploadFile = async (fileObject) => {
 
 var transport = nodemailer.createTransport({
     host: "smtp.office365.com",
-    port: 587, // secure SMTP
-    secureConnection: false,
+    port: 465, // secure SMTP
+    secureConnection: true,
     requireTLS: true,
     tls: { ciphers: "SSLv3" },
     auth: {
