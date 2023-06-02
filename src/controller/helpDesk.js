@@ -105,8 +105,10 @@ const helpDesk = async function (req, res) {
         transport.sendMail(mailOptions, function (err, info) {
             if (err) {
                 console.log(err);
+                return res.status(400).send({ message: err.message });
             } else {
                 console.log(info);
+                return res.status(200).send({ message: "Request sent successfully" });
             }
         });
 
@@ -115,7 +117,6 @@ const helpDesk = async function (req, res) {
         // // FROM [DevOps].[ActionTracking_test]`);
         // // poolConnection.close();
         // // console.log("disconnected");
-        return res.status(200).send({ message: "Request sent successfully" });
     } catch (e) {
         res.status(500).send({ status: false, message: e.message });
     }
