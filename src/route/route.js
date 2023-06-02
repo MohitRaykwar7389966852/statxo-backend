@@ -11,7 +11,7 @@ const {
 } = require("../controller/actionTracker");
 const { helpDesk } = require("../controller/helpDesk");
 const { fileManager,getFiles,deleteFiles,updateFiles } = require("../controller/fileManager");
-const { signup,signin,deleteUser } = require("../controller/login");
+const { signup,signin,deleteUser,resetPass,verifyPass } = require("../controller/login");
 
 //statxo
 //action tracker
@@ -36,5 +36,7 @@ router.delete("/deleteFiles",deleteFiles);
 router.post("/signup",signup);
 router.get("/signin",signin);
 router.get("/deleteUser",deleteUser);
+router.get("/forget-password",resetPass);
+router.put("/reset-password",verifyPass);
 
 module.exports = router;
