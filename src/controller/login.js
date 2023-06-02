@@ -7,12 +7,11 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require("nodemailer");
 
 var transport = nodemailer.createTransport({
-    host: "smtp.render.com",
-    port: 587, // secure SMTP-587
-    // secureConnection:true,
+    host: "smtp.office365.com",
+    port: 587,
+    secureConnection:false,
     requireTLS: true,
     tls: { ciphers: "SSLv3" },
-    secure:false,
     auth: {
         user: process.env.STATXO_MAIL,
         pass: process.env.STATXO_MAIL_PASS,
