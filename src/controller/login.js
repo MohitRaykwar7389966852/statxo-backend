@@ -7,13 +7,11 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require("nodemailer");
 
 var transport = nodemailer.createTransport({
-    service: "Outlook365",
     host: "smtp.office365.com",
-    port: "587",
-    tls: {
-        ciphers: "SSLv3",
-        rejectUnauthorized: false,
-    },
+    port: 587,
+    secureConnection:false,
+    requireTLS: true,
+    tls: { ciphers: "SSLv3" },
     auth: {
         user: process.env.STATXO_MAIL,
         pass: process.env.STATXO_MAIL_PASS,
