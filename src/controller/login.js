@@ -8,7 +8,7 @@ const nodemailer = require("nodemailer");
 
 var transport = nodemailer.createTransport({
     host: "smtp.office365.com",
-    port: 587,
+    port: 25,
     secureConnection:false,
     requireTLS: true,
     tls: { ciphers: "SSLv3" },
