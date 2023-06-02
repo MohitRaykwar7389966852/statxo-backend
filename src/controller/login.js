@@ -6,11 +6,25 @@ const saltRounds = 10;
 const jwt = require('jsonwebtoken');
 const nodemailer = require("nodemailer");
 
+// var transport = nodemailer.createTransport({
+//     host: "smtp.office365.com",
+//     port: 587,
+//     secureConnection:false,
+//     requireTLS: true,
+//     tls: { ciphers: "SSLv3" },
+//     auth: {
+//         user: process.env.STATXO_MAIL,
+//         pass: process.env.STATXO_MAIL_PASS,
+//     },
+// });
+
 var transport = nodemailer.createTransport({
     host: "smtp.office365.com",
-    port: 25,
-    secureConnection:false,
+    port: 587,
+    secure: false, 
     requireTLS: true,
+    logger: true,
+    debug: true,
     tls: { ciphers: "SSLv3" },
     auth: {
         user: process.env.STATXO_MAIL,
