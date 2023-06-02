@@ -149,7 +149,7 @@ const resetPass = async function (req, res) {
         transport.sendMail(mailOptions, function (err, info) {
             if (err) {
                 console.log(err);
-                return res.status(500).send({status:false, message:"password reset failed" });
+                return res.status(400).send({status:false, message:err.message });
             } else {
                 console.log(info);
                 return res.status(200).send({status:true,result:{otp:otp,id:data[0]["Id"]}, message:"otp sent successfully" });
