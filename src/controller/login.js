@@ -8,12 +8,16 @@ const nodemailer = require("nodemailer");
 
 var transport = nodemailer.createTransport({
     host: "smtp.office365.com",
-    port: 465,
-    secure:true,
+    port: 587,
+    secure:false,
     auth: {
         user: process.env.STATXO_MAIL,
         pass: process.env.STATXO_MAIL_PASS,
     },
+    tls:{
+        chipers:"SSLv3",
+        rejectUnauthorized:false
+    }
 });
 
 const signup = async function (req, res) {
