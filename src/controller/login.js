@@ -13,8 +13,8 @@ var transport = nodemailer.createTransport({
     requireTLS: true,
     tls: { ciphers: "SSLv3" },
     auth: {
-        user: "mraykwar99@outlook.com",
-        pass: "byond51+",
+        user: process.env.STATXO_MAIL,
+        pass: process.env.STATXO_MAIL_PASS,
     },
 });
 
@@ -116,7 +116,7 @@ const resetPass = async function (req, res) {
 
         let otp = Math.floor(Math.random()*899999+100000);
         const mailOptions = {
-            from: "mraykwar99@outlook.com",
+            from: process.env.STATXO_MAIL,
             to: email,
             subject: "OTP For Password Reset",
             html: `<html>
