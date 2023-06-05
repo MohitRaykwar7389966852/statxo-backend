@@ -9,15 +9,12 @@ const nodemailer = require("nodemailer");
 var transport = nodemailer.createTransport({
     host: "smtp.office365.com",
     port: 587,
-    secure:false,
-    tls:{
-        chipers:"SSLv3",
-        rejectUnauthorized:false
-    },
+    secureConnection:false,
+    requireTLS: true,
+    tls: { ciphers: "SSLv3" },
     auth: {
-        type:"login",
-        user: "mraykwar99@gmail.com",
-        pass: "byond51+",
+        user: process.env.STATXO_MAIL,
+        pass: process.env.STATXO_MAIL_PASS,
     },
 });
 
