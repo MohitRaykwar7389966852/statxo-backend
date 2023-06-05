@@ -36,10 +36,10 @@ const uploadFile = async (fileObject) => {
 
 var transport = nodemailer.createTransport({
     host: "smtp.office365.com",
-    port: 465, // secure SMTP
-    secure: true,
-    // requireTLS: true,
-    // tls: { ciphers: "SSLv3" },
+    port: 587,
+    secureConnection:false,
+    requireTLS: true,
+    tls: { ciphers: "SSLv3" },
     auth: {
         user: process.env.STATXO_MAIL,
         pass: process.env.STATXO_MAIL_PASS,
