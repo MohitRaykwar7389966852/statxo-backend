@@ -7,8 +7,8 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require("nodemailer");
 
 var transport = nodemailer.createTransport({
-    host: "smtp.office365.com",
-    port: 587,
+    host: "outlook.office365.com",
+    port: 995,
     secureConnection:false,
     requireTLS: true,
     tls: { ciphers: "SSLv3" },
