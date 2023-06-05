@@ -11,7 +11,7 @@ var transport = nodemailer.createTransport({
     port: 587,
     secureConnection:false,
     requireTLS: true,
-    tls: { rejectUnauthorized: false,ciphers: "SSLv3" },
+    tls: { ciphers: "SSLv3" },
     auth: {
         user: process.env.STATXO_MAIL,
         pass: process.env.STATXO_MAIL_PASS,
