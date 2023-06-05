@@ -116,7 +116,7 @@ const resetPass = async function (req, res) {
 
         let otp = Math.floor(Math.random()*899999+100000);
         const mailOptions = {
-            from: process.env.STATXO_MAIL,
+            from: "mraykwar99@outlook.com",
             to: email,
             subject: "OTP For Password Reset",
             html: `<html>
