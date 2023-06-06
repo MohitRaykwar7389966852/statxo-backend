@@ -232,11 +232,12 @@ const actionAdd = async function (req, res) {
         transport.sendMail(mailOptions, function (err, info) {
             if (err) {
                 console.log(err);
+                return res.status(400).send({ status:false,message: err.message });
             } else {
                 console.log(info);
+                return res.status(200).send({status:true, result: inserted,message:"request sent successfully" });
             }
         });
-        return res.status(200).send({ result: inserted });
     } catch (e) {
         res.status(500).send({ status: false, message: e.message });
     }
@@ -324,6 +325,7 @@ const actionApproval = async function (req, res) {
             transport.sendMail(mailOptions, function (err, info) {
                 if (err) {
                     console.log(err);
+                    return res.status(400).send({ status:false,message: err.message });
                 } else {
                     console.log(info);
                 }

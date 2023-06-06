@@ -48,7 +48,6 @@ var transport = nodemailer.createTransport({
 
 const helpDesk = async function (req, res) {
     try {
-        var poolConnection = await sql.connect(config);
         let { body, files } = req;
         console.log(body, files);
 
@@ -60,8 +59,6 @@ const helpDesk = async function (req, res) {
             fileUrl = "https://drive.google.com/open?id=" + uploaded.id;
             fileUrl = fileUrl.toString();
         }
-
-        // let adminMail = "mohit.raykwar@statxo.com";
 
         const mailOptions = {
             from: process.env.STATXO_MAIL,
@@ -105,18 +102,12 @@ const helpDesk = async function (req, res) {
         transport.sendMail(mailOptions, function (err, info) {
             if (err) {
                 console.log(err);
-                return res.status(400).send({ message: err.message });
+                return res.status(400).send({ status:false,message: err.message });
             } else {
                 console.log(info);
-                return res.status(200).send({ message: "Request sent successfully" });
+                return res.status(200).send({ status:true,message: "Request sent successfully" });
             }
         });
-
-        // // console.log("connected");
-        // // var data = await poolConnection.request().query(`SELECT *
-        // // FROM [DevOps].[ActionTracking_test]`);
-        // // poolConnection.close();
-        // // console.log("disconnected");
     } catch (e) {
         res.status(500).send({ status: false, message: e.message });
     }
