@@ -5,72 +5,86 @@ const sql = require("mssql");
 
 const notification = async function (req, res) {
     try {
+        let { body } = req;
+        console.log(body);
+        let { email,message,status } = body;
+
         var poolConnection = await sql.connect(config);
-        let { body, files } = req;
-        console.log(body, files);
+        console.log("connected");
 
-        let { title, comment, date, priority, section } = body;
-
-        let fileUrl = "";
-        if (files.length !== 0) {
-            let uploaded = await uploadFile(files[0]);
-            fileUrl = "https://drive.google.com/open?id=" + uploaded.id;
-            fileUrl = fileUrl.toString();
-        }
-
-        // let adminMail = "mohit.raykwar@statxo.com";
-
-        const mailOptions = {
-            from: process.env.STATXO_MAIL,
-            to: process.env.ADMIN_MAIL,
-            subject: "Help Desk Query",
-            html: `<html>
-                <head>
-                    <style type="text/css">
-                        div a{
-                            text-decoration: none;
-                            color: white;
-                            border: none;
-                            padding: 8px;
-                            border-radius: 5px;
-                        }
-                    </style>
-                </head>
-                <body style="font-family: open sans;">
-                <h3 class="text-primary">Hello Admin</h3>
-                <p style="color:#757575">User Send A Help Request</p>
-                <div style="font-size:13px;">
-                <p>Title : ${title}</p>
-                <p>Comment : ${comment}</p>
-                <p>Date : ${date}</p>
-                <p>Priority : ${priority}</p>
-                <p>Section : ${section}</p>
-                <p>Attachment : <a style="background: #5c6bc0;" href=${fileUrl}>Attachment</a></p>
-                </div>
-                <h1 style="color:#C2185B; margin-bottom:0px;">STATXO</h1>
-                <p style="color:#C2185B; font-size:10px;  margin-bottom:10px;">Powering Smarter Decisions</p>
-                <p style="color:#757575; font-size:14px;">Website :- <a style="color:blue; text-decoration:underline;" href="https://www.statxo.com/">www.statxo.com</a></p>
-                <p style="color:#757575; font-size:14px;">Number :- XXXXXXXXXX</p>
-                <p style="color:#C2185B; font-size:13px;  margin-bottom:10px;">New Delhi | Bengaluru | Romania | US</p>
-                <p style="font-size:11px;">Disclaimer Statement</p>
-                <p style="font-size:13px;">This message may also contain any attachments if included will contain purely confidential information intended for a specific individual 
-                and purpose, and is protected by law. If you are not the intended recipient of this message, you are requested to delete this message and are hereby notified that any disclosure,
-                 copying, or distribution of this message, or the taking of any action based on it, is strictly prohibited.</p>
-                `,
-        };
-
-        transport.sendMail(mailOptions, function (err, info) {
-            if (err) {
-                console.log(err);
-                return res.status(400).send({ message: err.message });
-            } else {
-                console.log(info);
-                return res.status(200).send({ message: "Request sent successfully" });
-            }
+        let noteCheck = await poolConnection.request().query(`SELECT *
+        FROM [DevOps].[Notification_Table] WHERE Email = '${email}'`);
+        let note = noteCheck.recordset;
+        let time = new Date().toLocaleString("en-US", {
+            timeZone: "Asia/Kolkata",
         });
+        let result;
+        if(note.length === 0 ){
+            let msg = [{id:1,message:message,timestamp:time,status:status}];
+            msg = JSON.stringify(msg);
+            result = await poolConnection.request()
+            .query(`INSERT INTO DevOps.Notification_Table 
+            (Email,Message)
+            VALUES('${email}','${msg}')
+            `);
+        }
+        else{
+            let noteArray = JSON.parse(note[0].Message);
+            let genId = noteArray.length+1;
+            noteArray.push({id:genId,message:message,timestamp:time,status:status});
+
+            msg = JSON.stringify(noteArray);
+            console.log(msg);
+            result = await poolConnection
+                .request()
+                .query(
+                    `UPDATE DevOps.Notification_Table SET Message ='${msg}' WHERE Email = '${email}'`
+                );
+        }
+        console.log(result.recordset);
+        return res.status(201).send({ status:true, result: result , message:"Notification saved successfully" });
+
     } catch (e) {
         res.status(500).send({ status: false, message: e.message });
     }
 };
 
-module.exports = { notification };
+const getNotification = async function (req, res) {
+    try {
+        let { query } = req;
+        let { email } = query;
+
+        var poolConnection = await sql.connect(config);
+        console.log("connected");
+
+        let data = await poolConnection.request().query(`SELECT *
+        FROM [DevOps].[Notification_Table] WHERE Email = '${email}'`);
+        console.log(data);
+        console.log(data.recordset);
+        return res.status(201).send({ status:true, result: data.recordset , message:"Notification fetched successfully" });
+
+    } catch (e) {
+        res.status(500).send({ status: false, message: e.message });
+    }
+};
+
+const delNotification = async function (req, res) {
+    try {
+        let { query } = req;
+        let { email } = query;
+
+        var poolConnection = await sql.connect(config);
+        console.log("connected");
+
+        let data = await poolConnection.request().query(`DELETE
+        FROM [DevOps].[Notification_Table] WHERE Email = '${email}'`);
+        // console.log(data);
+        // console.log(data.recordset);
+        return res.status(201).send({ status:true, result: data.recordset , message:"Notification removed successfully" });
+
+    } catch (e) {
+        res.status(500).send({ status: false, message: e.message });
+    }
+};
+
+module.exports = { notification,getNotification,delNotification };

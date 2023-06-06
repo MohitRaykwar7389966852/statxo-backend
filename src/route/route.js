@@ -12,7 +12,7 @@ const {
 const { helpDesk } = require("../controller/helpDesk");
 const { fileManager,getFiles,deleteFiles,updateFiles } = require("../controller/fileManager");
 const { signup,signin,deleteUser,resetPass,verifyPass } = require("../controller/login");
-const { notification } = require("../controller/notification");
+const { notification,getNotification,delNotification } = require("../controller/notification");
 
 //statxo
 //action tracker
@@ -42,5 +42,7 @@ router.put("/reset-password",verifyPass);
 
 //notification
 router.post("/notification",notification);
+router.get("/getNotification",getNotification);
+router.delete("/delNotification",delNotification);
 
 module.exports = router;
