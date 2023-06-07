@@ -252,19 +252,18 @@ const actionApproval = async function (req, res) {
         let date = new Date().toLocaleString("en-US", {
             timeZone: "Asia/Kolkata",
         });
+        console.log(Status,date,Id);
         var poolConnection = await sql.connect(config);
         console.log("connected");
         var st = await poolConnection.request().query(`SELECT Status
         FROM [DevOps].[ActionTracking_tree_test] WHERE Id = ${Id}`);
         let lastStatus = st.recordset[0].Status;
         if (lastStatus == "Pending") {
-            console.log("check1");
             let updated = await poolConnection
                 .request()
                 .query(
                     `UPDATE DevOps.ActionTracking_tree_test SET Status =${Status} , EditedOn = '${date}' WHERE Id = ${Id}`
                 );
-                console.log("check2");
             let actionData = await poolConnection
                 .request()
                 .query(
