@@ -183,7 +183,7 @@ const actionAdd = async function (req, res) {
         console.log("disconnected");
         let url1 = `https://statxo-backend.onrender.com/actionapproval/${nextid}?Status='Approved'`;
         let url2 = `https://statxo-backend.onrender.com/actionapproval/${nextid}?Status='Rejected'`;
-        let siteView = `https://spend-analytics-platform.netlify.app/actionapproval/${nextid}`;
+        let siteView = `https://spend-analytics-plaform.netlify.app/actionapproval/${nextid}`;
         const mailOptions = {
             from: process.env.STATXO_MAIL,
             to: ApproverMail,
