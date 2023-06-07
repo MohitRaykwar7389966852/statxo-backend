@@ -181,9 +181,9 @@ const actionAdd = async function (req, res) {
         console.log(inserted);
         poolConnection.close();
         console.log("disconnected");
-        let url1 = `http://localhost:4000/actionapproval/${nextid}?Status='Approved'`;
-        let url2 = `http://localhost:4000/actionapproval/${nextid}?Status='Rejected'`;
-        let siteView = `http://localhost:3000/actionapproval/${nextid}`;
+        let url1 = `https://statxo-backend.onrender.com/actionapproval/${nextid}?Status='Approved'`;
+        let url2 = `https://statxo-backend.onrender.com/actionapproval/${nextid}?Status='Rejected'`;
+        let siteView = `https://statxo-backend.onrender.com/actionapproval/${nextid}`;
         const mailOptions = {
             from: process.env.STATXO_MAIL,
             to: ApproverMail,
