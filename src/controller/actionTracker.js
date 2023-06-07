@@ -256,6 +256,7 @@ const actionApproval = async function (req, res) {
         console.log("connected");
         var st = await poolConnection.request().query(`SELECT Status
         FROM [DevOps].[ActionTracking_tree_test] WHERE Id = ${Id}`);
+        console.log("query run done");
         let lastStatus = st.recordset[0].Status;
         if (lastStatus == "Pending") {
             let updated = await poolConnection
