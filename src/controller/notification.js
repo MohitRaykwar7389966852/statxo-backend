@@ -78,13 +78,12 @@ const delNotification = async function (req, res) {
 
         let data = await poolConnection.request().query(`DELETE
         FROM [DevOps].[Notification_Table] WHERE Email = '${email}'`);
-        // console.log(data);
-        // console.log(data.recordset);
         return res.status(201).send({ status:true, result: data.recordset , message:"Notification removed successfully" });
 
     } catch (e) {
         res.status(500).send({ status: false, message: e.message });
     }
 };
+
 
 module.exports = { notification,getNotification,delNotification };

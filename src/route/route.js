@@ -13,6 +13,8 @@ const { helpDesk } = require("../controller/helpDesk");
 const { fileManager,getFiles,deleteFiles,updateFiles } = require("../controller/fileManager");
 const { signup,signin,deleteUser,resetPass,verifyPass } = require("../controller/login");
 const { notification,getNotification,delNotification } = require("../controller/notification");
+const { categoryTree,addCategory,categoryTreeById, categoryApproval,validationData } = require("../controller/categoryTree");
+// const { validation } = require("../controller/validation");
 
 //statxo
 //action tracker
@@ -44,5 +46,14 @@ router.put("/reset-password",verifyPass);
 router.post("/notification",notification);
 router.get("/getNotification",getNotification);
 router.delete("/delNotification",delNotification);
+
+//category tree
+router.get("/categoryTree",categoryTree);
+router.post("/addCategory",addCategory);
+router.get("/categoryTreeById/:categoryId",categoryTreeById);
+router.get("/categoryapproval/:Id",categoryApproval);
+
+//validation
+router.get("/validationData",validationData);
 
 module.exports = router;
