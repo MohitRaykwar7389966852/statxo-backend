@@ -9,25 +9,31 @@ const {
 	actionApproval,
 	createActionTable,
 } = require("../controller/actionTracker");
-const { helpDesk } = require("../controller/helpDesk");
+const { helpDesk,getQuery,getQueryById,helpResponse } = require("../controller/helpDesk");
 const { fileManager,getFiles,deleteFiles,updateFiles } = require("../controller/fileManager");
 const { signup,signin,deleteUser,resetPass,verifyPass } = require("../controller/login");
 const { notification,getNotification,delNotification } = require("../controller/notification");
 const { categoryTree,addCategory,categoryTreeById, categoryApproval } = require("../controller/categoryTree");
 const { validationData } = require("../controller/validationData");
+const { getKpi } = require("../controller/kpiData");
 
 //statxo
 //action tracker
 router.get("/actiontracker", actionTracker);
 router.get("/createActionTable", createActionTable);
 router.put("/actionUpdate/:actionId", actionUpdate);
+
 //action tree
 router.get("/actiontree", actionTree);
 router.get("/actiontreeById/:actionId", actionTreeById);
 router.post("/actionadd", actionAdd);
 router.get("/actionapproval/:Id", actionApproval);
+
 //help
 router.post("/helpdesk", helpDesk);
+router.get("/getQuery", getQuery);
+router.get("/getQueryById/:Id", getQueryById);
+router.get("/helpResponse/:Id",helpResponse );
 
 //file-manager
 router.post("/filemanager",fileManager);
@@ -55,5 +61,8 @@ router.get("/categoryapproval/:Id",categoryApproval);
 
 //validation
 router.get("/validationData",validationData);
+
+//kpi
+router.get("/getKpi",getKpi);
 
 module.exports = router;

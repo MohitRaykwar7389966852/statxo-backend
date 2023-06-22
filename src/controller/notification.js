@@ -42,6 +42,8 @@ const notification = async function (req, res) {
                 );
         }
         console.log(result.recordset);
+        poolConnection.close();
+        console.log("disconnected");
         return res.status(201).send({ status:true, result: result , message:"Notification saved successfully" });
 
     } catch (e) {
@@ -61,6 +63,8 @@ const getNotification = async function (req, res) {
         FROM [DevOps].[Notification_Table] WHERE Email = '${email}'`);
         console.log(data);
         console.log(data.recordset);
+        poolConnection.close();
+        console.log("disconnected");
         return res.status(201).send({ status:true, result: data.recordset , message:"Notification fetched successfully" });
 
     } catch (e) {
@@ -78,6 +82,8 @@ const delNotification = async function (req, res) {
 
         let data = await poolConnection.request().query(`DELETE
         FROM [DevOps].[Notification_Table] WHERE Email = '${email}'`);
+        poolConnection.close();
+        console.log("disconnected");
         return res.status(201).send({ status:true, result: data.recordset , message:"Notification removed successfully" });
 
     } catch (e) {
