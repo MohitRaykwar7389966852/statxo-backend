@@ -90,8 +90,8 @@ const getKpi = async function (req, res) {
         let lastaction = await poolConnection.request().query(`SELECT MAX(YearMonth)
             FROM [DevOps].[ActionTracking_test]`);
 
-        var spend = await poolConnection.request().query(`SELECT YearMonth,SUM(AmountEUR)
-        FROM [DevOps].[SpendData] GROUP BY YearMonth ORDER BY YearMonth ASC`);
+        var spend = await poolConnection.request().query(`SELECT Year,Month_Name,SUM(AmountEUR)
+        FROM [DevOps].[SpendData] GROUP BY Year,MonthName ORDER BY Year ASC`);
 
         spend = spend.recordsets[0];
 
