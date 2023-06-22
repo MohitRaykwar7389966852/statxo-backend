@@ -9,26 +9,10 @@ const getKpi = async function (req, res) {
         let data=[];
 
         function formatCompactNumber(number) {
-        // number=  Math.around(number);
-        number = number+"";
-        num = number.split(".");
-        return Number(num[0]);
-        //   if (number < 1000) {
-        //     return number;
-        //   } 
-        // // else if (number >= 1000 && number < 1_000_000) {
-        // //     return (number / 1000).toFixed(1);
-        // //   }
-        // //    else 
-        //    else if (number >= 1_000_000 && number < 1_000_000_000) {
-        //     return Math(number / 1_000_000).toFixed(1);
-        //   }
-        // //    else if (number >= 1_000_000_000 && number < 1_000_000_000_000) {
-        // //     return (number / 1_000_000_000).toFixed(1);
-        // //   } else if (number >= 1_000_000_000_000 && number < 1_000_000_000_000_000) {
-        // //     return (number / 1_000_000_000_000).toFixed(1);
-        // //   }
-        }
+            number = number+"";
+            num = number.split(".");
+            return Number(num[0]);
+            }
 
         //spend
         let sum1 = await poolConnection.request().query(`SELECT SUM(AmountEUR) 
@@ -61,25 +45,6 @@ const getKpi = async function (req, res) {
             else rejected++;
         }
 
-        // chart spend
-        var spendYear = await poolConnection.request().query(`SELECT DISTINCT Year
-        FROM [DevOps].[SpendData] ORDER BY Year ASC`);
-        spendYear = spendYear.recordsets[0];
-        let spendYr=[];
-        for(let i=0; i<spendYear.length; i++){
-            spendYr.push(spendYear[i].Year);
-        };
-        console.log(spendYr);
-
-        var spend = await poolConnection.request().query(`SELECT Year,SUM(AmountEUR)
-        FROM [DevOps].[SpendData] GROUP BY Year ORDER BY Year ASC`);
-        spend = spend.recordsets[0];
-
-        let spend2 = await poolConnection.request().query(`SELECT Month_Name,Year,SUM(AmountEUR)
-            FROM [DevOps].[SpendData] GROUP BY Month_Name,Year ORDER BY Year ASC`);
-        
-        spend2 = spend2.recordsets[0];
-
         //last status
         let lastspend = await poolConnection.request().query(`SELECT MAX(YearMonth)
             FROM [DevOps].[SpendData]`);
@@ -90,31 +55,31 @@ const getKpi = async function (req, res) {
         let lastaction = await poolConnection.request().query(`SELECT MAX(YearMonth)
             FROM [DevOps].[ActionTracking_test]`);
 
-        var spend = await poolConnection.request().query(`SELECT Year,Month_Name,SUM(AmountEUR)
-        FROM [DevOps].[SpendData] GROUP BY Year,MonthName ORDER BY Year ASC`);
-
-        spend = spend.recordsets[0];
-
-        let ar=[];
-        let m=["jan","feb","mar","april", "may", "jun", "jul", "aug", "sep", "oct", "nov", "ec"];
-
-        for(let i=0; i<spend.length; i++){
-          
-                let str = spend[i]["YearMonth"];
-                let year = str.slice(0,4);
-                let month = str.slice(str.length-2);
-                if(month.slice(0,1) == "0") month.slice(0,-1);
-                let key = m[month-1];
-                if(ar.length == 0 || ar[ar.length-1]["state"] !== year){
-                    ar.push({
-                        state:year
-                    });
-                    ar[ar.length-1][key] = formatCompactNumber(spend[i][""]);
-                }
-                else if(ar[ar.length-1]["state"] == year){
-                    ar[ar.length-1][key] = formatCompactNumber(spend[i][""]);
-                }
-        }
+            var spend = await poolConnection.request().query(`SELECT YearMonth,SUM(AmountEUR)
+            FROM [DevOps].[SpendData] GROUP BY YearMonth ORDER BY YearMonth ASC`);
+    
+            spend = spend.recordsets[0];
+    
+            let ar=[];
+            let m=["jan","feb","mar","april", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+    
+            for(let i=0; i<spend.length; i++){
+              
+                    let str = spend[i]["YearMonth"];
+                    let year = str.slice(0,4);
+                    let month = str.slice(str.length-2);
+                    if(month.slice(0,1) == "0") month.slice(0,-1);
+                    let key = m[month-1];
+                    if(ar.length == 0 || ar[ar.length-1]["state"] !== year){
+                        ar.push({
+                            state:year
+                        });
+                        ar[ar.length-1][key] = formatCompactNumber(spend[i][""]);
+                    }
+                    else if(ar[ar.length-1]["state"] == year){
+                        ar[ar.length-1][key] = formatCompactNumber(spend[i][""]);
+                    }
+            }
 
         data.push({
             total:sum1.recordsets[0][0][""],
@@ -131,10 +96,6 @@ const getKpi = async function (req, res) {
             pending:pending,
             inprogress:inprogress,
             rejected:rejected
-        },{
-            year:spendYr,
-            chart:spend,
-            chart2:spend2
         },
         {
             lastspend:lastspend.recordsets[0][0][""],
@@ -155,6 +116,80 @@ const getKpi = async function (req, res) {
     }
 };
 
+const getChart = async function (req, res) {
+    try {
+        // var poolConnection = await sql.connect(config);
+        // console.log("connected");
+        // let data=[];
+
+        // function formatCompactNumber(number) {
+        // number = number+"";
+        // num = number.split(".");
+        // return Number(num[0]);
+        // }
+
+        // // chart spend
+        // // var spendYear = await poolConnection.request().query(`SELECT DISTINCT Year
+        // // FROM [DevOps].[SpendData] ORDER BY Year ASC`);
+        // // spendYear = spendYear.recordsets[0];
+        // // let spendYr=[];
+        // // for(let i=0; i<spendYear.length; i++){
+        // //     spendYr.push(spendYear[i].Year);
+        // // };
+        // // console.log(spendYr);
+
+        // // var spend = await poolConnection.request().query(`SELECT Year,SUM(AmountEUR)
+        // // FROM [DevOps].[SpendData] GROUP BY Year ORDER BY Year ASC`);
+        // // spend = spend.recordsets[0];
+
+        // // let spend2 = await poolConnection.request().query(`SELECT Month_Name,Year,SUM(AmountEUR)
+        // //     FROM [DevOps].[SpendData] GROUP BY Month_Name,Year ORDER BY Year ASC`);
+        
+        // // spend2 = spend2.recordsets[0];
+
+        
+        // var spend = await poolConnection.request().query(`SELECT YearMonth,SUM(AmountEUR)
+        // FROM [DevOps].[SpendData] GROUP BY YearMonth ORDER BY YearMonth ASC`);
+
+        // spend = spend.recordsets[0];
+
+        // let ar=[];
+        // let m=["jan","feb","mar","april", "may", "jun", "jul", "aug", "sep", "oct", "nov", "ec"];
+
+        // for(let i=0; i<spend.length; i++){
+          
+        //         let str = spend[i]["YearMonth"];
+        //         let year = str.slice(0,4);
+        //         let month = str.slice(str.length-2);
+        //         if(month.slice(0,1) == "0") month.slice(0,-1);
+        //         let key = m[month-1];
+        //         if(ar.length == 0 || ar[ar.length-1]["state"] !== year){
+        //             ar.push({
+        //                 state:year
+        //             });
+        //             ar[ar.length-1][key] = formatCompactNumber(spend[i][""]);
+        //         }
+        //         else if(ar[ar.length-1]["state"] == year){
+        //             ar[ar.length-1][key] = formatCompactNumber(spend[i][""]);
+        //         }
+        // }
+
+        // data.push(
+        // {
+        //     stacked:ar
+        // }
+        // );
+
+
+        // poolConnection.close();
+        // console.log("disconnected");
+        // return res.status(200).send({ result: data, message:"kpi fetched successfully" });
+    } catch (e) {
+        res.status(500).send({ status: false, message: e.message });
+    }
+};
+
+
 
 
 
@@ -174,5 +209,5 @@ const getKpi = async function (req, res) {
 // };
 
 module.exports = {
-    getKpi
+    getKpi,getChart
 };
