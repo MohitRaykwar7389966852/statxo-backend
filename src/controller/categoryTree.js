@@ -45,7 +45,7 @@ const addCategory = async function (req, res) {
             Approver,
             ApproverMail,
         } = body;
-
+        console.log(l1category,l2category,l3category,l4category);
         console.log(ApproverMail);
 
         let date = new Date().toLocaleString("en-US", {
@@ -58,26 +58,6 @@ const addCategory = async function (req, res) {
         var maxid = await poolConnection.request().query(`SELECT max(Id)
         FROM [DevOps].[CategoryTreeTable]`);
         let nextid = maxid.recordset[0][""] + 1;
-
-        let series1 = l3category.split(" ")
-        let l3series = series1[0];
-
-        var l4 = await poolConnection.request().query(`SELECT L4Category
-        FROM [DevOps].[CategoryTreeTable] WHERE L4Category LIKE '${l3series}%'`);
-
-        let l4Array = l4.recordsets[0];
-        let max=0;
-        for(let i=0; i<l4Array.length; i++){
-            let series1 = l4Array[i]["L4Category"].split(" ");
-            let l4series = series1[0];
-            let l4Num = l4series.split(".");
-            let num = l4Num[l4Num.length-1];
-            if(max<num) max=num;
-        }
-        let n = Number(max)+1;
-        let newseries = l3series+"."+n;
-
-        l4category = [newseries,l4category].join(" - ");
 
         var inserted = await poolConnection.request()
             .query(`INSERT INTO DevOps.CategoryTreeTable 

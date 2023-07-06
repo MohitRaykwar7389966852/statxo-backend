@@ -14,8 +14,8 @@ const { fileManager,getFiles,deleteFiles,updateFiles } = require("../controller/
 const { signup,signin,deleteUser,resetPass,verifyPass } = require("../controller/login");
 const { notification,getNotification,delNotification } = require("../controller/notification");
 const { categoryTree,addCategory,categoryTreeById, categoryApproval } = require("../controller/categoryTree");
-const { validationData } = require("../controller/validationData");
-const { getKpi,getChart } = require("../controller/kpiData");
+const { validationData, validationShortTable } = require("../controller/validationData");
+const { getKpi,getChart,getActivity } = require("../controller/kpiData");
 
 //statxo
 //action tracker
@@ -61,9 +61,11 @@ router.get("/categoryapproval/:Id",categoryApproval);
 
 //validation
 router.get("/validationData",validationData);
+router.get("/validationShort",validationShortTable);
 
 //kpi
 router.get("/getKpi",getKpi);
 router.get("/getChart",getChart);
+router.get("/getActivity",getActivity);
 
 module.exports = router;
