@@ -11,13 +11,9 @@ const config = {
     },
     options: {
         encrypt: true,
-    },
-    connectionPool: {
-        max: 100, 
-        min: 0,
-        // idleTimeoutMillis: 30000
-    },
-    requestTimeout: 30000
+        trustedConnection: true,
+      },
+    requestTimeout: 0
 };
 console.log("starting...");
 

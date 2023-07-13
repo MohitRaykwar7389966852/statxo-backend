@@ -16,6 +16,7 @@ const { notification,getNotification,delNotification } = require("../controller/
 const { categoryTree,addCategory,categoryTreeById, categoryApproval } = require("../controller/categoryTree");
 const { validationData, validationShortTable } = require("../controller/validationData");
 const { getKpi,getChart,getActivity } = require("../controller/kpiData");
+const { SpendData,SavingData } = require("../controller/masterData");
 
 //statxo
 //action tracker
@@ -67,5 +68,9 @@ router.get("/validationShort",validationShortTable);
 router.get("/getKpi",getKpi);
 router.get("/getChart",getChart);
 router.get("/getActivity",getActivity);
+
+//master data
+router.get("/spendData",SpendData);
+router.get("/savingData",SavingData);
 
 module.exports = router;

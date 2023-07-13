@@ -133,8 +133,8 @@ const getChart = async function (req, res) {
         var poolConnection = await sql.connect(config);
         console.log("connected");
 
-        var spend = await poolConnection.request().query(`SELECT YearMonth,SUM(AmountEUR)
-        FROM [DevOps].[SpendData] GROUP BY YearMonth ORDER BY YearMonth ASC`);
+        var spend = await poolConnection.request().query(`SELECT CompanyName,YearMonth,SUM(AmountEUR)
+        FROM [DevOps].[SpendData] GROUP BY CompanyName,YearMonth ORDER BY CompanyName,YearMonth ASC`);
         spend = spend.recordsets[0];
         let ar=[];
         let m=["jan","feb","mar","april", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
@@ -143,23 +143,38 @@ const getChart = async function (req, res) {
                 let str = spend[i]["YearMonth"];
                 let year = str.slice(0,4);
                 let month = str.slice(str.length-2);
+                let companyKey = spend[i]["CompanyName"];
                 if(month.slice(0,1) == "0") month.slice(0,-1);
                 let key = m[month-1];
-                if(ar.length == 0 || ar[ar.length-1]["state"] !== year){
-                    ar.push({
-                        state:year
-                    });
-                      ar[ar.length-1][key] = formatCompactNumber(spend[i][""]);
-                    }
-                else if(ar[ar.length-1]["state"] == year){
-                    ar[ar.length-1][key] = formatCompactNumber(spend[i][""]);
+                
+
+                if(ar.length == 0 || !ar[ar.length-1][companyKey]){
+                    if(ar.length ==0) ar.push({});
+                    ar[ar.length-1][companyKey] = [{
+                        state:year,
+                        [key]:formatCompactNumber(spend[i][""])
+                    }];
+                }
+                else {
+                        let arr = ar[ar.length-1][companyKey];
+
+                        if(arr[arr.length-1]["state"] == year){
+                            arr[arr.length-1][key] = formatCompactNumber(spend[i][""]);
+                        }
+                        else if (arr[arr.length-1]["state"] !== year){
+                            arr.push({
+                                state:year,
+                                [key]:formatCompactNumber(spend[i][""])
+                            });
+                        }
+                        
+                        ar[ar.length-1][companyKey] = arr;
                 }
             }
-
-    
+            console.log(ar);
         poolConnection.close();
         console.log("disconnected");
-        return res.status(200).send({ result: ar, message:"kpi fetched successfully" });
+        return res.status(200).send({ result: ar, message:"chart fetched successfully" });
     } catch (e) {
         res.status(500).send({ status: false, message: e.message });
     }
