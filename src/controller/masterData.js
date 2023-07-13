@@ -10,7 +10,7 @@ const SpendData = async function (req, res) {
         spend = await sql.connect(config)
         .then(pool => {
             console.log("connected");
-            return pool.request().query(`SELECT * FROM [DevOps].[SpendData]`);
+            return pool.request().query(`SELECT TOP(100) * FROM [DevOps].[SpendData]`);
         });
         return res.status(200).send({ result:spend.recordset, message:"spend data fetched successfully" });
     } catch (e) {
