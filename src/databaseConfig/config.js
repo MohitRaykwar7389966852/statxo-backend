@@ -11,7 +11,7 @@ const config = {
     },
     options: {
         encrypt: true,
-        trustedConnection: true,
+        // trustedConnection: true,
       },
     requestTimeout: 0,
 };
