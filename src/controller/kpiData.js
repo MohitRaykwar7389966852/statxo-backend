@@ -4,16 +4,10 @@ const sql = require("mssql");
 
 const getKpi = async function (req, res) {
     try {
-        let {email} = req.query;
+        // let {email} = req.query;
         var poolConnection = await sql.connect(config);
         console.log("connected");
         let data=[];
-
-        // function formatCompactNumber(number) {
-        //     number = number+"";
-        //     num = number.split(".");
-        //     return Number(num[0]);
-        //     }
 
         //spend
         let sp = await poolConnection.request().query(`SELECT SUM(AmountEUR),COUNT(DISTINCT CompanyName),COUNT(DISTINCT Supplier_Key),COUNT(CompanyName),COUNT(DISTINCT ReportingLevel4),MAX(YearMonth),MIN(YearMonth),COUNT(DISTINCT Entity_Country)
@@ -22,7 +16,6 @@ const getKpi = async function (req, res) {
         // saving
         let sv = await poolConnection.request().query(`SELECT SUM(CALC_AmountEUR_YTD_TY),COUNT(DISTINCT CompanyPrimaryCluster),SUM(CALC_PriceVariance_YTD),MAX(YearMonth),MIN(YearMonth),COUNT(DISTINCT Entity_RegionP)
         FROM [DevOps].[SavingData_2]`);
-        
 
         // //action
         let ac = await poolConnection.request().query(`SELECT SUM(AmountEUR),COUNT(DISTINCT CompanyName),COUNT(DISTINCT VendorNameHarmonized),MAX(YearMonth),MIN(YearMonth),COUNT(DISTINCT ActionName),COUNT(DISTINCT Entity_Country),COUNT(case when Status = 'Pending' then 1 else null end)
@@ -34,7 +27,7 @@ const getKpi = async function (req, res) {
 
         //help
         var help = await poolConnection.request().query(`SELECT COUNT(Status),COUNT(case when Status = 'Pending' then 1 else null end),COUNT(case when Status = 'In Progress' then 1 else null end),COUNT(case when Status = 'Rejected' then 1 else null end),COUNT(case when Status = 'Successfull' then 1 else null end)
-        FROM [DevOps].[Help_Desk_Table] WHERE Email = '${email}'`);
+        FROM [DevOps].[Help_Desk_Table]'`);
         
         var lasthelp = await poolConnection.request().query(`SELECT Date
         FROM [DevOps].[Help_Desk_Table] WHERE Email = '${email}'`);
@@ -55,29 +48,6 @@ const getKpi = async function (req, res) {
             }
         }
         let lhelp = yr+""+mn;
-
-        // var spend = await poolConnection.request().query(`SELECT YearMonth,SUM(AmountEUR)
-        // FROM [DevOps].[SpendData] GROUP BY YearMonth ORDER BY YearMonth ASC`);
-        // spend = spend.recordsets[0];
-        // let ar=[];
-        // let m=["jan","feb","mar","april", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
-        // for(let i=0; i<spend.length; i++){
-              
-        //         let str = spend[i]["YearMonth"];
-        //         let year = str.slice(0,4);
-        //         let month = str.slice(str.length-2);
-        //         if(month.slice(0,1) == "0") month.slice(0,-1);
-        //         let key = m[month-1];
-        //         if(ar.length == 0 || ar[ar.length-1]["state"] !== year){
-        //             ar.push({
-        //                 state:year
-        //             });
-        //               ar[ar.length-1][key] = formatCompactNumber(spend[i][""]);
-        //             }
-        //         else if(ar[ar.length-1]["state"] == year){
-        //             ar[ar.length-1][key] = formatCompactNumber(spend[i][""]);
-        //         }
-        //     }
 
         data.push(
             {
@@ -107,11 +77,8 @@ const getKpi = async function (req, res) {
                 reject:help.recordsets[0][0][""][3],
                 success:help.recordsets[0][0][""][4],
                 helpTime:lhelp,
-                // chart:ar
             }
         );
-        
-
 
         poolConnection.close();
         console.log("disconnected");

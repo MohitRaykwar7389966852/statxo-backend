@@ -13,7 +13,7 @@ const config = {
         encrypt: true,
         trustedConnection: true,
       },
-    requestTimeout: 0
+    requestTimeout: 0,
 };
 console.log("starting...");
 

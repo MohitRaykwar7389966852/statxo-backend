@@ -60,17 +60,6 @@ const signin = async function (req, res) {
         if(loginArray.length === 0) return res.status(400).send({status:false, message:"Email not matched" });
         let checkPass = bcrypt.compareSync(pass,loginArray[0].Pass);
         if(checkPass === false) return res.status(400).send({ status:false, message:"Password not matched" });
-        // let token = jwt.sign(
-        //     {
-        //       email: loginArray[0].Email,
-        //       name:loginArray[0].Name,
-        //       company:loginArray[0].Company
-        //     //   iat: Math.floor(Date.now() / 1000),
-        //     //   exp: Math.floor(Date.now() / 1000) + 10 * 60 * 60,
-        //     },
-        //     "statxo-user"
-        //   );
-        //   console.log(loginArray);
         poolConnection.close();
         console.log("disconnected");
         return res.status(200).send({status:true,result:loginArray[0], message:"Login successfully" });
