@@ -4,9 +4,10 @@ const sql = require("mssql");
 
 const getKpi = async function (req, res) {
     try {
-        // let {email} = req.query;
+        let {email} = req.query;
         var poolConnection = await sql.connect(config);
         console.log("connected");
+        console.log("KPI Loading");
         let data=[];
 
         //spend
@@ -27,7 +28,7 @@ const getKpi = async function (req, res) {
 
         //help
         var help = await poolConnection.request().query(`SELECT COUNT(Status),COUNT(case when Status = 'Pending' then 1 else null end),COUNT(case when Status = 'In Progress' then 1 else null end),COUNT(case when Status = 'Rejected' then 1 else null end),COUNT(case when Status = 'Successfull' then 1 else null end)
-        FROM [DevOps].[Help_Desk_Table]'`);
+        FROM [DevOps].[Help_Desk_Table] WHERE Email = '${email}'`);
         
         var lasthelp = await poolConnection.request().query(`SELECT Date
         FROM [DevOps].[Help_Desk_Table] WHERE Email = '${email}'`);
@@ -79,6 +80,9 @@ const getKpi = async function (req, res) {
                 helpTime:lhelp,
             }
         );
+
+        console.log("kpi ready");
+        console.log(data);
 
         poolConnection.close();
         console.log("disconnected");
