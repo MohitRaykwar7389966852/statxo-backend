@@ -81,12 +81,9 @@ const getKpi = async function (req, res) {
             }
         );
 
-        console.log("kpi ready");
-        console.log(data);
-
         poolConnection.close();
         console.log("disconnected");
-        return res.status(200).send({ result: data, message:"kpi fetched successfully" });
+        return res.status(200).send({ result: JSON.stringify(data), message:"kpi fetched successfully" });
     } catch (e) {
         res.status(500).send({ status: false, message: e.message });
     }
