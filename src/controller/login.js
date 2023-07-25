@@ -49,9 +49,7 @@ const signup = async function (req, res) {
 const signin = async function (req, res) {
     try {
         console.log("--Login--");
-        const { query } = req;
-        console.log(query);
-        const {email,pass} = query
+        const {email,pass} = req.query;
         var poolConnection = await sql.connect(config);
         console.log("connected");
         var loginCheck = await poolConnection.request().query(`SELECT *
@@ -60,9 +58,18 @@ const signin = async function (req, res) {
         if(loginArray.length === 0) return res.status(400).send({status:false, message:"Email not matched" });
         let checkPass = bcrypt.compareSync(pass,loginArray[0].Pass);
         if(checkPass === false) return res.status(400).send({ status:false, message:"Password not matched" });
+        //jwt
+        let obj={
+            Id: loginArray[0].Id,
+            Name: loginArray[0].Name,
+            Email: loginArray[0].Email,
+            Company: loginArray[0].Company,
+            Job: loginArray[0].Job,
+          };
+        const token = jwt.sign(obj,"spendAnalyticPlatform", { expiresIn: '1h' });
         poolConnection.close();
         console.log("disconnected");
-        return res.status(200).send({status:true,result:loginArray[0], message:"Login successfully" });
+        return res.status(200).send({status:true,result:JSON.stringify(token), message:"Login successfully" });
     } catch (e) {
         res.status(500).send({ status: false, message: e.message });
     }

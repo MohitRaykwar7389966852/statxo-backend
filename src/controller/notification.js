@@ -5,15 +5,16 @@ const sql = require("mssql");
 
 const notification = async function (req, res) {
     try {
+        const user = req.userDetails;
         let { body } = req;
         console.log(body);
-        let { email,message,status } = body;
+        let { message,status } = body;
 
         var poolConnection = await sql.connect(config);
         console.log("connected");
 
         let noteCheck = await poolConnection.request().query(`SELECT *
-        FROM [DevOps].[Notification_Table] WHERE Email = '${email}'`);
+        FROM [DevOps].[Notification_Table] WHERE Email = '${user.Email}'`);
         let note = noteCheck.recordset;
         let time = new Date().toLocaleString("en-US", {
             timeZone: "Asia/Kolkata",
@@ -25,7 +26,7 @@ const notification = async function (req, res) {
             result = await poolConnection.request()
             .query(`INSERT INTO DevOps.Notification_Table 
             (Email,Message)
-            VALUES('${email}','${msg}')
+            VALUES('${user.Email}','${msg}')
             `);
         }
         else{
@@ -38,7 +39,7 @@ const notification = async function (req, res) {
             result = await poolConnection
                 .request()
                 .query(
-                    `UPDATE DevOps.Notification_Table SET Message ='${msg}' WHERE Email = '${email}'`
+                    `UPDATE DevOps.Notification_Table SET Message ='${msg}' WHERE Email = '${user.Email}'`
                 );
         }
         console.log(result.recordset);
@@ -53,14 +54,12 @@ const notification = async function (req, res) {
 
 const getNotification = async function (req, res) {
     try {
-        let { query } = req;
-        let { email } = query;
-
+        const user = req.userDetails;
         var poolConnection = await sql.connect(config);
         console.log("connected");
 
         let data = await poolConnection.request().query(`SELECT *
-        FROM [DevOps].[Notification_Table] WHERE Email = '${email}'`);
+        FROM [DevOps].[Notification_Table] WHERE Email = '${user.Email}'`);
         console.log(data);
         console.log(data.recordset);
         poolConnection.close();
@@ -74,14 +73,13 @@ const getNotification = async function (req, res) {
 
 const delNotification = async function (req, res) {
     try {
-        let { query } = req;
-        let { email } = query;
+        const user = req.userDetails;
 
         var poolConnection = await sql.connect(config);
         console.log("connected");
 
         let data = await poolConnection.request().query(`DELETE
-        FROM [DevOps].[Notification_Table] WHERE Email = '${email}'`);
+        FROM [DevOps].[Notification_Table] WHERE Email = '${user.Email}'`);
         poolConnection.close();
         console.log("disconnected");
         return res.status(201).send({ status:true, result: data.recordset , message:"Notification removed successfully" });

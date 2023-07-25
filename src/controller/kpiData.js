@@ -4,11 +4,10 @@ const sql = require("mssql");
 
 const getKpi = async function (req, res) {
     try {
-        let {email} = req.query;
+        const user = req.userDetails;
         var poolConnection = await sql.connect(config);
         console.log("connected");
         let data=[];
-
         //spend
         let sp = await poolConnection.request().query(`SELECT SUM(AmountEUR),COUNT(DISTINCT CompanyName),COUNT(DISTINCT Supplier_Key),COUNT(CompanyName),COUNT(DISTINCT ReportingLevel4),MAX(YearMonth),MIN(YearMonth),COUNT(DISTINCT Entity_Country)
         FROM [DevOps].[SpendData]`);
@@ -27,10 +26,10 @@ const getKpi = async function (req, res) {
 
         //help
         var help = await poolConnection.request().query(`SELECT COUNT(Status),COUNT(case when Status = 'Pending' then 1 else null end),COUNT(case when Status = 'In Progress' then 1 else null end),COUNT(case when Status = 'Rejected' then 1 else null end),COUNT(case when Status = 'Successfull' then 1 else null end)
-        FROM [DevOps].[Help_Desk_Table] WHERE Email = '${email}'`);
+        FROM [DevOps].[Help_Desk_Table] WHERE Email = '${user.Email}'`);
         
         var lasthelp = await poolConnection.request().query(`SELECT Date
-        FROM [DevOps].[Help_Desk_Table] WHERE Email = '${email}'`);
+        FROM [DevOps].[Help_Desk_Table] WHERE Email = '${user.Email}'`);
         lasthelp = lasthelp.recordsets[0];
         let mn=0;
         let yr=0;
@@ -149,13 +148,12 @@ const getChart = async function (req, res) {
 
 const getActivity = async function (req, res) {
     try {
-        let { email } = req.query;
-
+        const user = req.userDetails;
         var poolConnection = await sql.connect(config);
         console.log("connected");
 
         let data = await poolConnection.request().query(`SELECT *
-        FROM [DevOps].[Notification_Table] WHERE Email = '${email}'`);
+        FROM [DevOps].[Notification_Table] WHERE Email = '${user.Email}'`);
 
         poolConnection.close();
         console.log("disconnected");

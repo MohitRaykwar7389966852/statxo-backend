@@ -52,8 +52,9 @@ const helpDesk = async function (req, res) {
     try {
         let { body, files } = req;
         console.log(body, files);
+        const user = req.userDetails;
 
-        let { title, comment, date, priority, section,email } = body;
+        let { title, comment, date, priority, section } = body;
 
         let fileUrl = "";
         if (files.length !== 0) {
@@ -61,14 +62,14 @@ const helpDesk = async function (req, res) {
             fileUrl = "https://drive.google.com/open?id=" + uploaded.id;
             fileUrl = fileUrl.toString();
         }
-        console.log(email,title,section,priority,comment,date,fileUrl);
+        console.log(user.Email,title,section,priority,comment,date,fileUrl);
         var poolConnection = await sql.connect(config);
         console.log("connected");
 
         let inserted = await poolConnection.request()
             .query(`INSERT INTO DevOps.Help_Desk_Table 
         (Email,Title,Comment,Priority,Section,Date,Attachment,Status,Admin_Comment)
-        VALUES('${email}','${title}','${comment}','${priority}','${section}','${date}','${fileUrl}','Pending','')
+        VALUES('${user.Email}','${title}','${comment}','${priority}','${section}','${date}','${fileUrl}','Pending','')
         `);
 
         var maxid = await poolConnection.request().query(`SELECT max(Id)
@@ -136,14 +137,12 @@ const helpDesk = async function (req, res) {
 
 const getQuery = async function (req, res) {
     try {
-        let { query } = req;
-        let { email } = query;
-
+        const user = req.userDetails;
         var poolConnection = await sql.connect(config);
         console.log("connected");
 
         let data = await poolConnection.request().query(`SELECT *
-        FROM [DevOps].[Help_Desk_Table] WHERE Email = '${email}'`);
+        FROM [DevOps].[Help_Desk_Table] WHERE Email = '${user.Email}'`);
         console.log(data.recordsets);
         return res.status(200).send({ status:true, result: data.recordsets , message:"Help queries fetched successfully" });
 

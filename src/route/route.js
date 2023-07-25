@@ -17,24 +17,25 @@ const { categoryTree,addCategory,categoryTreeById, categoryApproval } = require(
 const { validationData, validationShortTable } = require("../controller/validationData");
 const { getKpi,getChart,getActivity } = require("../controller/kpiData");
 const { SpendData,SavingData } = require("../controller/masterData");
+const {auth} = require("../middleware/auth");
 
 //statxo
 //action tracker
-router.get("/actiontracker", actionTracker);
-router.get("/createActionTable", createActionTable);
-router.put("/actionUpdate/:actionId", actionUpdate);
+router.get("/actiontracker",auth,actionTracker);
+router.get("/createActionTable",auth,createActionTable);
+router.put("/actionUpdate/:actionId",auth,actionUpdate);
 
 //action tree
-router.get("/actiontree", actionTree);
-router.get("/actiontreeById/:actionId", actionTreeById);
-router.post("/actionadd", actionAdd);
-router.get("/actionapproval/:Id", actionApproval);
+router.get("/actiontree",auth,actionTree);
+router.get("/actiontreeById/:actionId",auth, actionTreeById);
+router.post("/actionadd",auth, actionAdd);
+router.get("/actionapproval/:Id",auth, actionApproval);
 
 //help
-router.post("/helpdesk", helpDesk);
-router.get("/getQuery", getQuery);
-router.get("/getQueryById/:Id", getQueryById);
-router.get("/helpResponse/:Id",helpResponse );
+router.post("/helpdesk",auth, helpDesk);
+router.get("/getQuery",auth, getQuery);
+router.get("/getQueryById/:Id",auth, getQueryById);
+router.get("/helpResponse/:Id",auth,helpResponse );
 
 //file-manager
 router.post("/filemanager",fileManager);
@@ -50,27 +51,27 @@ router.get("/forget-password",resetPass);
 router.put("/reset-password",verifyPass);
 
 //notification
-router.post("/notification",notification);
-router.get("/getNotification",getNotification);
-router.delete("/delNotification",delNotification);
+router.post("/notification",auth,notification);
+router.get("/getNotification",auth,getNotification);
+router.delete("/delNotification",auth,delNotification);
 
 //category tree
-router.get("/categoryTree",categoryTree);
-router.post("/addCategory",addCategory);
-router.get("/categoryTreeById/:categoryId",categoryTreeById);
-router.get("/categoryapproval/:Id",categoryApproval);
+router.get("/categoryTree",auth,categoryTree);
+router.post("/addCategory",auth,addCategory);
+router.get("/categoryTreeById/:categoryId",auth,categoryTreeById);
+router.get("/categoryapproval/:Id",auth,categoryApproval);
 
 //validation
-router.get("/validationData",validationData);
-router.get("/validationShort",validationShortTable);
+router.get("/validationData",auth,validationData);
+router.get("/validationShort",auth,validationShortTable);
 
 //kpi
-router.get("/getKpi",getKpi);
-router.get("/getChart",getChart);
-router.get("/getActivity",getActivity);
+router.get("/getKpi",auth,getKpi);
+router.get("/getChart",auth,getChart);
+router.get("/getActivity",auth,getActivity);
 
 //master data
-router.get("/spendData",SpendData);
-router.get("/savingData",SavingData);
+router.get("/spendData",auth,SpendData);
+router.get("/savingData",auth,SavingData);
 
 module.exports = router;
