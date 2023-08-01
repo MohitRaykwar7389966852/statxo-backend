@@ -17,7 +17,7 @@ const getKpi = async function (req, res) {
         
         // saving
         let sv = await poolConnection.request().query(`SELECT SUM(CALC_AmountEUR_YTD_TY),COUNT(DISTINCT CompanyPrimaryCluster),SUM(CALC_PriceVariance_YTD),MAX(YearMonth),MIN(YearMonth),COUNT(DISTINCT Entity_RegionP)
-        FROM [DevOps].[SavingData_2]`);
+        FROM [DevOps].[SavingData_2] ${inClause}`);
 
         // //action
         let ac = await poolConnection.request().query(`SELECT SUM(AmountEUR),COUNT(DISTINCT CompanyName),COUNT(DISTINCT VendorNameHarmonized),MAX(YearMonth),MIN(YearMonth),COUNT(DISTINCT ActionName),COUNT(DISTINCT Entity_Country),COUNT(case when Status = 'Pending' then 1 else null end)
@@ -109,9 +109,9 @@ const getChart = async function (req, res) {
         FROM [DevOps].[SpendData] ${inClause} GROUP BY CompanyName,YearMonth ORDER BY CompanyName,YearMonth ASC`);
         spend = spend.recordsets[0];
         
-        var save = await poolConnection.request().query(`SELECT CompanyCode,YearMonth,SUM(CALC_AmountEUR_YTD_TY)
-         FROM [DevOps].[SavingData_2] GROUP BY CompanyCode,YearMonth ORDER BY CompanyCode,YearMonth ASC`);
-        save = save.recordsets[0];//need RLS
+        var save = await poolConnection.request().query(`SELECT CompanyName,YearMonth,SUM(CALC_AmountEUR_YTD_TY)
+         FROM [DevOps].[SavingData_2] ${inClause} GROUP BY CompanyName,YearMonth ORDER BY CompanyName,YearMonth ASC`);
+        save = save.recordsets[0];
 
         var action = await poolConnection.request().query(`SELECT CompanyName,YearMonth,SUM(AmountEUR)
         FROM [DevOps].[ActionTracking_test] ${inClause} GROUP BY CompanyName,YearMonth ORDER BY CompanyName,YearMonth ASC`);
@@ -123,9 +123,7 @@ const getChart = async function (req, res) {
             let str = spend[i]["YearMonth"];
             let year = str.slice(0, 4);
             let month = str.slice(str.length - 2);
-            let companyKey;
-            if(status == "spend" || status == "action") companyKey = spend[i]["CompanyName"];
-            else if(status == "saving") companyKey = spend[i]["CompanyCode"];
+            let companyKey = spend[i]["CompanyName"];
             if(ar.length == 0 ){
                 ar.push({
                     [companyKey]:{
@@ -194,9 +192,23 @@ const getCountry = async function (req, res) {
         var spend = await poolConnection.request().query(`SELECT [CountryCode],SUM(AmountEUR)
         FROM [DevOps].[SpendData] ${inClause} GROUP BY [CountryCode] ORDER BY [CountryCode] ASC`);
         spend = spend.recordsets[0];
+
+        var save = await poolConnection.request().query(`SELECT [CountryCode],SUM(CALC_AmountEUR_YTD_TY)
+        FROM [DevOps].[SavingData_2] ${inClause} GROUP BY [CountryCode] ORDER BY [CountryCode] ASC`);
+        save = save.recordsets[0];
+
+        for(let i=0; i<spend.length; i++){
+            let key = spend[i]["CountryCode"];
+            let data;
+            for(let j=0; j<save.length; j++){
+                if(save[j]["CountryCode"] == key){
+                    data = save[j][""];
+                    break;
+                }
+            }
+            spend[i]["saving"] = data;
+        }
         
-
-
         poolConnection.close();
         console.log("disconnected");
         return res.status(201).send({ status: true, result: spend, message: "Activities fetched successfully" });
