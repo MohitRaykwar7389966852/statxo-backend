@@ -4,6 +4,7 @@ const sql = require("mssql");
 
 const validationData = async function (req, res) {
     try {
+        const inClause = req.inClause;
         var poolConnection = await sql.connect(config);
         console.log("connected");
         var data = await poolConnection.request().query(`SELECT *

@@ -58,6 +58,12 @@ const signin = async function (req, res) {
         if(loginArray.length === 0) return res.status(400).send({status:false, message:"Email not matched" });
         let checkPass = bcrypt.compareSync(pass,loginArray[0].Pass);
         if(checkPass === false) return res.status(400).send({ status:false, message:"Password not matched" });
+
+        
+        var access = await poolConnection.request().query(`SELECT *
+        FROM [DevOps].[ExcessRights] WHERE Email = '${email}'`);
+        access = access.recordset[0];
+
         //jwt
         let obj={
             Id: loginArray[0].Id,
@@ -65,8 +71,9 @@ const signin = async function (req, res) {
             Email: loginArray[0].Email,
             Company: loginArray[0].Company,
             Job: loginArray[0].Job,
+            Access: JSON.parse(access.Access)
           };
-        const token = jwt.sign(obj,"spendAnalyticPlatform", { expiresIn: '1h' });
+        const token = jwt.sign(obj,"spendAnalyticPlatform", { expiresIn: '10h' });
         poolConnection.close();
         console.log("disconnected");
         return res.status(200).send({status:true,result:JSON.stringify(token), message:"Login successfully" });
@@ -180,6 +187,25 @@ const verifyPass = async function (req, res) {
     }
 };
 
+const access = async function (req, res) {
+    try {
+        const user = req.userDetails;
+        var poolConnection = await sql.connect(config);
+        console.log("connected");
+
+        var data = await poolConnection.request().query(`SELECT *
+        FROM [DevOps].[ExcessRights] WHERE Email = '${user.Email}'`);
+        data = data.recordset[0];
+        
+        poolConnection.close();
+        console.log("disconnected");
+        return res.status(200).send({status:true,result:data, message:"Access Data successfully" });
+        
+    } catch (e) {
+        res.status(500).send({ status: false, message: e.message });
+    }
+};
+
 module.exports = {
-    signup,signin,deleteUser,resetPass,verifyPass
+    signup,signin,deleteUser,resetPass,verifyPass,access
 };

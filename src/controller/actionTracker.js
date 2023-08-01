@@ -46,10 +46,11 @@ var transport = nodemailer.createTransport({
 
 const actionTracker = async function (req, res) {
     try {
+        const inClause = req.inClause;
         var poolConnection = await sql.connect(config);
         console.log("connected");
         var data = await poolConnection.request().query(`SELECT *
-        FROM [DevOps].[ActionTracking_test]`);
+        FROM [DevOps].[ActionTracking_test] ${inClause}`);
         poolConnection.close();
         console.log("disconnected");
         return res.status(200).send({ result: data.recordsets });
@@ -145,7 +146,6 @@ const actionAdd = async function (req, res) {
         const { body, files } = req;
         console.log(body);
         console.log(files);
-
         let {
             ActionType,
             ActionName,
@@ -164,15 +164,12 @@ const actionAdd = async function (req, res) {
         var maxid = await poolConnection.request().query(`SELECT max(Id)
         FROM [DevOps].[ActionTracking_tree_test]`);
         let nextid = maxid.recordset[0][""] + 1;
-
         let attachmentUrl = "";
-
         if (files.length !== 0) {
             let uploaded = await uploadFile(files[0]);
             attachmentUrl = "https://drive.google.com/open?id=" + uploaded.id;
             attachmentUrl = attachmentUrl.toString();
         }
-
         var inserted = await poolConnection.request()
             .query(`INSERT INTO DevOps.ActionTracking_tree_test 
         (Id,ActionType,ActionName,ActionNumber,ActionDescription,Owner,Approver,Attachment,EditedOn,Status)
