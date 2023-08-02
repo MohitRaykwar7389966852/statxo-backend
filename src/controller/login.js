@@ -64,6 +64,8 @@ const signin = async function (req, res) {
         FROM [DevOps].[ExcessRights] WHERE Email = '${email}'`);
         access = access.recordset[0];
 
+        if(access.Access !== "All") access.Access = JSON.parse(access.Access)
+
         //jwt
         let obj={
             Id: loginArray[0].Id,
@@ -71,7 +73,7 @@ const signin = async function (req, res) {
             Email: loginArray[0].Email,
             Company: loginArray[0].Company,
             Job: loginArray[0].Job,
-            Access: JSON.parse(access.Access)
+            Access: access.Access
           };
         const token = jwt.sign(obj,"spendAnalyticPlatform", { expiresIn: '10h' });
         poolConnection.close();

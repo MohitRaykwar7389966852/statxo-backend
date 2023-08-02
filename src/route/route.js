@@ -17,6 +17,7 @@ const { categoryTree,addCategory,categoryTreeById, categoryApproval } = require(
 const { validationData, validationShortTable } = require("../controller/validationData");
 const { getKpi,getChart,getActivity,getCountry } = require("../controller/kpiData");
 const { SpendData,SavingData } = require("../controller/masterData");
+const { profile } = require("../controller/profile");
 const {auth} = require("../middleware/auth");
 const {rls} = require("../middleware/rowLevelSecurity");
 
@@ -76,5 +77,8 @@ router.get("/getCountry",auth,rls,getCountry);
 //master data
 router.get("/spendData",auth,rls,SpendData);
 router.get("/savingData",auth,rls,SavingData);
+
+//profile
+router.get("/profile",auth,profile);
 
 module.exports = router;
