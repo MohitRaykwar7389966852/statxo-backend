@@ -59,12 +59,11 @@ const signin = async function (req, res) {
         let checkPass = bcrypt.compareSync(pass,loginArray[0].Pass);
         if(checkPass === false) return res.status(400).send({ status:false, message:"Password not matched" });
 
-        
         var access = await poolConnection.request().query(`SELECT *
         FROM [DevOps].[ExcessRights] WHERE Email = '${email}'`);
         access = access.recordset[0];
 
-        if(access.Access !== "All") access.Access = JSON.parse(access.Access)
+        // if(access.Access !== "All") access.Access = JSON.parse(access.Access);
 
         //jwt
         let obj={
@@ -195,9 +194,60 @@ const access = async function (req, res) {
         var poolConnection = await sql.connect(config);
         console.log("connected");
 
-        var data = await poolConnection.request().query(`SELECT *
-        FROM [DevOps].[ExcessRights] WHERE Email = '${user.Email}'`);
-        data = data.recordset[0];
+        // let arr2 = {
+        //     spend:{
+        //         ["Entity_Region P"]:["APAC","EMEA"],
+        //         ["CountryCode"]:["ESP","ITA","CHN"],
+        //         ["CompanyName"]:["ComapnyName 1","ComapnyName 2","ComapnyName 3"]
+        //     },
+        //     saving:{
+        //         ["Entity_Region P"]:["EMEA"],
+        //         ["CountryCode"]:["ESP","ITA","CHN"],
+        //         ["CompanyName"]:["ComapnyName 0","ComapnyName 1","ComapnyName 2","ComapnyName 3"]
+        //     },
+        //     action:{
+        //         ["Entity_Region P"]:["EMEA"],
+        //         ["Entity_Region"]:["France"],
+        //         ["CompanyName"]:["ComapnyName 2"]
+        //     }
+        // }
+
+        // let spend = arr2.spend;
+        // console.log(spend);
+        
+        // addString(spend);
+
+        // function addString(data){
+
+        //     let key = Object.keys(data);
+
+        //     key.map(x=>{
+
+            // })
+
+
+            // if(en.length !== 0){
+            //     const values = data.map((value) => `'${value}'`).join(', ');
+            //     if(spendString)
+            //     spendString += `WHERE [Entity_Region P] IN ${values}`
+            // }
+        // }
+
+        // let str2 = JSON.stringify(arr2);
+
+        // let updated = await poolConnection
+        //         .request()
+        //         .query(
+        //             `UPDATE DevOps.ExcessRights SET  Access = '${str2}' WHERE Email = 'mohit.raykwar@statxo.com'`
+        //         );
+
+        // var data = await poolConnection.request().query(`SELECT *
+        // FROM [DevOps].[ExcessRights]`);
+
+        var data = await poolConnection.request().query(`SELECT table_name
+        FROM INFORMATION_SCHEMA.TABLES
+        WHERE table_type = 'BASE TABLE'
+        AND table_schema = 'DevOps'`);
         
         poolConnection.close();
         console.log("disconnected");

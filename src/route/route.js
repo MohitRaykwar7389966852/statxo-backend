@@ -18,6 +18,7 @@ const { validationData, validationShortTable } = require("../controller/validati
 const { getKpi,getChart,getActivity,getCountry } = require("../controller/kpiData");
 const { SpendData,SavingData } = require("../controller/masterData");
 const { profile } = require("../controller/profile");
+const { brandList,clientList,tableList,tableColumn,columnValue,addRight } = require("../controller/accessRight");
 const {auth} = require("../middleware/auth");
 const {rls} = require("../middleware/rowLevelSecurity");
 
@@ -51,7 +52,7 @@ router.get("/signin",signin);
 router.get("/deleteUser",deleteUser);
 router.get("/forget-password",resetPass);
 router.put("/reset-password",verifyPass);
-router.get("/access",auth,access);
+router.get("/access",access);
 
 //notification
 router.post("/notification",auth,notification);
@@ -80,5 +81,13 @@ router.get("/savingData",auth,rls,SavingData);
 
 //profile
 router.get("/profile",auth,profile);
+
+//access right
+router.get("/brandList",brandList);
+router.get("/clientList",clientList);
+router.get("/tableList",tableList);
+router.get("/tableColumn",tableColumn);
+router.get("/columnValue",columnValue);
+router.get("/addRight",addRight);
 
 module.exports = router;

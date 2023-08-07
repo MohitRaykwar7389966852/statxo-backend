@@ -6,7 +6,6 @@ const getKpi = async function (req, res) {
     try {
         const user = req.userDetails;
         const inClause = req.inClause;
-        console.log(inClause);
         var poolConnection = await sql.connect(config);
         console.log("connected");
         let data = [];
@@ -197,21 +196,19 @@ const getCountry = async function (req, res) {
         FROM [DevOps].[SavingData_2] ${inClause} GROUP BY [CountryCode] ORDER BY [CountryCode] ASC`);
         save = save.recordsets[0];
 
-        for(let i=0; i<spend.length; i++){
-            let key = spend[i]["CountryCode"];
-            let data;
-            for(let j=0; j<save.length; j++){
-                if(save[j]["CountryCode"] == key){
-                    data = save[j][""];
-                    break;
-                }
-            }
-            spend[i]["saving"] = data;
+        var action = await poolConnection.request().query(`SELECT [Entity_Country],SUM(AmountEUR)
+        FROM [DevOps].[ActionTracking_test] ${inClause} GROUP BY [Entity_Country] ORDER BY [Entity_Country] ASC`);
+        action = action.recordsets[0];
+
+        let data = {
+            spend:spend,
+            saving:save,
+            action:action
         }
         
         poolConnection.close();
         console.log("disconnected");
-        return res.status(201).send({ status: true, result: spend, message: "Activities fetched successfully" });
+        return res.status(201).send({ status: true, result: data, message: "Activities fetched successfully" });
 
     } catch (e) {
         res.status(500).send({ status: false, message: e.message });

@@ -1,16 +1,20 @@
-function buildInClause(arr) {
-    if(arr == "All") return ``;
-    else{
-    const values = arr.map((value) => `'${value}'`).join(', ');
-    return `WHERE CompanyName IN (${values})`;
-    }
-  }
+// function buildInClause(arr) {
+//     if(arr == "All") return ``;
+//     else{
+
+//     }
+//   }
 
 const rls = async function(req,res,next){
     try{
         const user = req.userDetails;
         let access = user.Access;
-        req.inClause = buildInClause(access);
+        if(access == "All") req.inClause = ``;
+        else{
+            let arr = access.split('"');
+            let str = arr.join("'");
+            req.inClause = str;
+        } 
         next();
     }
     catch(e)
