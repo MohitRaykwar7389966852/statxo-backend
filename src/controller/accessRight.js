@@ -15,7 +15,7 @@ const brandList = async function (req, res) {
         
         poolConnection.close();
         console.log("disconnected");
-        return res.status(200).send({status:true,result:data, message:"Access Data successfully" });
+        return res.status(200).send({status:true,result:data, message:"Brand List Fetched successfully" });
         
     } catch (e) {
         res.status(500).send({ status: false, message: e.message });
@@ -88,13 +88,17 @@ const columnValue = async function (req, res) {
         const columnName = req.query.columnName;
         const tableName = req.query.tableName;
         const condition = req.query.condition;
+        
+        let arr = condition.split('"');
+        let str = arr.join("'");
         var poolConnection = await sql.connect(config);
         console.log("connected");
 
-        console.log(condition);
+        console.log(str);
+        
 
         var data = await poolConnection.request().query(`SELECT DISTINCT(${columnName}) AS title
-        FROM DevOps.${tableName} ${condition}`);
+        FROM DevOps.${tableName} ${str}`);
         data=data.recordset;
 
         console.log(data);
