@@ -46,11 +46,12 @@ var transport = nodemailer.createTransport({
 
 const actionTracker = async function (req, res) {
     try {
-        const inClause = req.inClause;
+        let actioninClause;
+        if(req["ActionTracking_test_Clause"]) actioninClause = req["ActionTracking_test_Clause"];
         var poolConnection = await sql.connect(config);
         console.log("connected");
         var data = await poolConnection.request().query(`SELECT *
-        FROM [DevOps].[ActionTracking_test] ${inClause}`);
+        FROM [DevOps].[ActionTracking_test] ${actioninClause}`);
         poolConnection.close();
         console.log("disconnected");
         return res.status(200).send({ result: data.recordsets });

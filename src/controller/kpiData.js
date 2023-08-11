@@ -5,22 +5,25 @@ const sql = require("mssql");
 const getKpi = async function (req, res) {
     try {
         const user = req.userDetails;
-        const inClause = req.inClause;
+        let spendinClause,savinginClause,actioninClause,inClause;
+        if(req["SpendData_Clause"]) spendinClause = req["SpendData_Clause"];
+        if(req["SavingData_2_Clause"]) savinginClause = req["SavingData_2_Clause"];
+        if(req["ActionTracking_test_Clause"]) actioninClause = req["ActionTracking_test_Clause"];
         var poolConnection = await sql.connect(config);
         console.log("connected");
         let data = [];
 
         //spend
         let sp = await poolConnection.request().query(`SELECT SUM(AmountEUR),COUNT(DISTINCT CompanyName),COUNT(DISTINCT Supplier_Key),COUNT(CompanyName),COUNT(DISTINCT ReportingLevel4),MAX(YearMonth),MIN(YearMonth),COUNT(DISTINCT Entity_Country)
-        FROM [DevOps].[SpendData] ${inClause}`);
+        FROM [DevOps].[SpendData] ${spendinClause}`);
         
         // saving
         let sv = await poolConnection.request().query(`SELECT SUM(CALC_AmountEUR_YTD_TY),COUNT(DISTINCT CompanyPrimaryCluster),SUM(CALC_PriceVariance_YTD),MAX(YearMonth),MIN(YearMonth),COUNT(DISTINCT Entity_RegionP)
-        FROM [DevOps].[SavingData_2] ${inClause}`);
+        FROM [DevOps].[SavingData_2] ${savinginClause}`);
 
         // //action
         let ac = await poolConnection.request().query(`SELECT SUM(AmountEUR),COUNT(DISTINCT CompanyName),COUNT(DISTINCT VendorNameHarmonized),MAX(YearMonth),MIN(YearMonth),COUNT(DISTINCT ActionName),COUNT(DISTINCT Entity_Country),COUNT(case when Status = 'Pending' then 1 else null end)
-        FROM [DevOps].[ActionTracking_test] ${inClause}`);
+        FROM [DevOps].[ActionTracking_test] ${actioninClause}`);
 
         let ac2 = await poolConnection.request().query(`SELECT SUM([AmountEUR(Pre)]),SUM([AmountEUR(Post)])
         FROM [DevOps].[ActionTracking_test_upd]`);
@@ -93,7 +96,10 @@ const getChart = async function (req, res) {
     try {
 
         let user = req.userDetails;
-        const inClause = req.inClause;
+        let spendinClause,savinginClause,actioninClause,inClause;
+        if(req["SpendData_Clause"]) spendinClause = req["SpendData_Clause"];
+        if(req["SavingData_2_Clause"]) savinginClause = req["SavingData_2_Clause"];
+        if(req["ActionTracking_test_Clause"]) actioninClause = req["ActionTracking_test_Clause"];
 
         function formatCompactNumber(number) {
             number = number + "";
@@ -105,15 +111,15 @@ const getChart = async function (req, res) {
         console.log("connected");
 
         var spend = await poolConnection.request().query(`SELECT CompanyName,YearMonth,SUM(AmountEUR)
-        FROM [DevOps].[SpendData] ${inClause} GROUP BY CompanyName,YearMonth ORDER BY CompanyName,YearMonth ASC`);
+        FROM [DevOps].[SpendData] ${spendinClause} GROUP BY CompanyName,YearMonth ORDER BY CompanyName,YearMonth ASC`);
         spend = spend.recordsets[0];
         
         var save = await poolConnection.request().query(`SELECT CompanyName,YearMonth,SUM(CALC_AmountEUR_YTD_TY)
-         FROM [DevOps].[SavingData_2] ${inClause} GROUP BY CompanyName,YearMonth ORDER BY CompanyName,YearMonth ASC`);
+         FROM [DevOps].[SavingData_2] ${savinginClause} GROUP BY CompanyName,YearMonth ORDER BY CompanyName,YearMonth ASC`);
         save = save.recordsets[0];
 
         var action = await poolConnection.request().query(`SELECT CompanyName,YearMonth,SUM(AmountEUR)
-        FROM [DevOps].[ActionTracking_test] ${inClause} GROUP BY CompanyName,YearMonth ORDER BY CompanyName,YearMonth ASC`);
+        FROM [DevOps].[ActionTracking_test] ${actioninClause} GROUP BY CompanyName,YearMonth ORDER BY CompanyName,YearMonth ASC`);
         action = action.recordsets[0];
 
         function chart(spend,status){
@@ -183,21 +189,24 @@ const getActivity = async function (req, res) {
 const getCountry = async function (req, res) {
     try {
         const user = req.userDetails;
-        const inClause = req.inClause;
+        let spendinClause,savinginClause,actioninClause,inClause;
+        if(req["SpendData_Clause"]) spendinClause = req["SpendData_Clause"];
+        if(req["SavingData_2_Clause"]) savinginClause = req["SavingData_2_Clause"];
+        if(req["ActionTracking_test_Clause"]) actioninClause = req["ActionTracking_test_Clause"];
         
         var poolConnection = await sql.connect(config);
         console.log("connected");
 
         var spend = await poolConnection.request().query(`SELECT [CountryCode],SUM(AmountEUR)
-        FROM [DevOps].[SpendData] ${inClause} GROUP BY [CountryCode] ORDER BY [CountryCode] ASC`);
+        FROM [DevOps].[SpendData] ${spendinClause} GROUP BY [CountryCode] ORDER BY [CountryCode] ASC`);
         spend = spend.recordsets[0];
 
         var save = await poolConnection.request().query(`SELECT [CountryCode],SUM(CALC_AmountEUR_YTD_TY)
-        FROM [DevOps].[SavingData_2] ${inClause} GROUP BY [CountryCode] ORDER BY [CountryCode] ASC`);
+        FROM [DevOps].[SavingData_2] ${savinginClause} GROUP BY [CountryCode] ORDER BY [CountryCode] ASC`);
         save = save.recordsets[0];
 
         var action = await poolConnection.request().query(`SELECT [Entity_Country],SUM(AmountEUR)
-        FROM [DevOps].[ActionTracking_test] ${inClause} GROUP BY [Entity_Country] ORDER BY [Entity_Country] ASC`);
+        FROM [DevOps].[ActionTracking_test] ${actioninClause} GROUP BY [Entity_Country] ORDER BY [Entity_Country] ASC`);
         action = action.recordsets[0];
 
         let data = {

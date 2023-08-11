@@ -88,7 +88,6 @@ const columnValue = async function (req, res) {
         const columnName = req.query.columnName;
         const tableName = req.query.tableName;
         const condition = req.query.condition;
-        
         let arr = condition.split('"');
         let str = arr.join("'");
         var poolConnection = await sql.connect(config);
@@ -97,7 +96,7 @@ const columnValue = async function (req, res) {
         console.log(str);
         
 
-        var data = await poolConnection.request().query(`SELECT DISTINCT(${columnName}) AS title
+        var data = await poolConnection.request().query(`SELECT DISTINCT([${columnName}]) AS title
         FROM DevOps.${tableName} ${str}`);
         data=data.recordset;
 
@@ -116,25 +115,51 @@ const addRight = async function (req, res) {
     try {
         const query = req.query.query;
         const mail = req.query.email;
+        console.log(mail);
+        const table = req.query.table;
         let email = JSON.parse(mail);
         var poolConnection = await sql.connect(config);
         console.log("connected");
 
-        console.log(email);
+        // email clause
+        const values = email.map((value) => `'${value}'`).join(', ');
+        let Clause =  `WHERE Email IN (${values})`;
+        console.log(Clause);
 
-        // const values = email.map((value) => `'${value}'`).join(', ');
-        // let Clause =  `WHERE Email IN (${values})`;
+        var data1 = await poolConnection.request().query(`SELECT *
+        FROM [DevOps].[ExcessRights] ${Clause}`);
+        data1 = data1.recordset;
 
-        // console.log(Clause);
+        let arr = [];
+        data1.map(x=>{
+            let obj = x.Access;
+            obj = JSON.parse(obj);
+            obj[table] = query;
+            arr.push([x.Email,obj]);
+        });
 
-        for(let i =0; i<email.length; i++){
-         await poolConnection
+        console.log(arr);
+
+        for(let i=0; i<arr.length; i++){
+            let accessEmail = arr[i][0];
+            let access = arr[i][1];
+            access = JSON.stringify(access);
+            console.log(access);
+            console.log(accessEmail);
+            await poolConnection
             .request()
             .query(
-                `UPDATE DevOps.ExcessRights SET  Access = '${query}' WHERE Email = 'mohit.raykwar@statxo.com'`
-            );
-        }
+                `UPDATE DevOps.ExcessRights SET  Access = '${access}' WHERE Email = '${accessEmail}'`
+            ); 
+        };
 
+
+        //  await poolConnection
+        //     .request()
+        //     .query(
+        //         `UPDATE DevOps.ExcessRights SET  Access = '{}' ${Clause}`
+        //     );
+        
         var data = await poolConnection.request().query(`SELECT *
         FROM [DevOps].[ExcessRights]`);
 
@@ -149,6 +174,41 @@ const addRight = async function (req, res) {
     }
 };
 
+const accessClient = async function (req, res) {
+    try {
+        const table = req.query.table;
+        var poolConnection = await sql.connect(config);
+        console.log("connected");
+
+        var data = await poolConnection.request().query(`SELECT *
+        FROM [DevOps].[ExcessRights]`);
+        data = data.recordset;
+        let arr=[];
+        data.map(x=>{
+        if(x.Access !== "" || x.Access !== undefined || x.Access !== null){
+            let access = x.Access;
+            if(access == "All") return;
+            access = JSON.parse(access);
+            console.log(access);
+            let rights = access[table];
+            if(rights){
+                arr.push({
+                    Email:x.Email,
+                    Query:rights
+                });
+                console.log(arr);
+            }
+        }        
+        });
+        console.log(arr);
+        poolConnection.close();
+        console.log("disconnected");
+        return res.status(200).send({status:true,result:arr, message:"Access Data successfully" }); 
+    } catch (e) {
+        res.status(500).send({ status: false, message: e.message });
+    }
+};
+
 module.exports = {
-    brandList,clientList,tableList,tableColumn,columnValue,addRight
+    brandList,clientList,tableList,tableColumn,columnValue,addRight,accessClient
 };
