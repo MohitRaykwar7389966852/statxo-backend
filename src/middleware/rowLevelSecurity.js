@@ -6,7 +6,7 @@ const rls = async function(req,res,next){
         let access = user.Access;
         access = JSON.parse(access);
         console.log(access);
-        if(access !== "global")
+        if(access !== "global"){
             let key = Object.keys(access);
             console.log(key);
             for(let i=0; i<key.length; i++){
