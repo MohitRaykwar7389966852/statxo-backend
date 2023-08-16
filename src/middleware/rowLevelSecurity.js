@@ -4,9 +4,9 @@ const rls = async function(req,res,next){
         console.log("RLS");
         const user = req.userDetails;
         let access = user.Access;
-        access = JSON.parse(access);
         console.log(access);
         if(access !== "global"){
+        access = JSON.parse(access)
             let key = Object.keys(access);
             console.log(key);
             for(let i=0; i<key.length; i++){
