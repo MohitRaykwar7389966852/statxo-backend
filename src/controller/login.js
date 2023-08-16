@@ -237,11 +237,11 @@ const access = async function (req, res) {
 
         // let str2 = JSON.stringify(arr2);
 
-        let updated = await poolConnection
-                .request()
-                .query(
-                    `UPDATE DevOps.ExcessRights SET  AccessType = 'admin' WHERE Email = 'prashant.yadav@statxo.com'`
-                );
+        // let updated = await poolConnection
+        //         .request()
+        //         .query(
+        //             `UPDATE DevOps.ExcessRights SET  Access = 'global' WHERE Email = 'prashant.yadav@statxo.com'`
+        //         );
 
         var data = await poolConnection.request().query(`SELECT *
         FROM [DevOps].[ExcessRights]`);

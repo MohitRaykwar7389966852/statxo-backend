@@ -5,7 +5,7 @@ const sql = require("mssql");
 const getKpi = async function (req, res) {
     try {
         const user = req.userDetails;
-        let spendinClause,savinginClause,actioninClause,inClause;
+        let spendinClause=``,savinginClause=``,actioninClause=``;
         if(req["SpendData_Clause"]) spendinClause = req["SpendData_Clause"];
         if(req["SavingData_2_Clause"]) savinginClause = req["SavingData_2_Clause"];
         if(req["ActionTracking_test_Clause"]) actioninClause = req["ActionTracking_test_Clause"];
@@ -96,7 +96,7 @@ const getChart = async function (req, res) {
     try {
 
         let user = req.userDetails;
-        let spendinClause,savinginClause,actioninClause,inClause;
+        let spendinClause=``,savinginClause=``,actioninClause=``
         if(req["SpendData_Clause"]) spendinClause = req["SpendData_Clause"];
         if(req["SavingData_2_Clause"]) savinginClause = req["SavingData_2_Clause"];
         if(req["ActionTracking_test_Clause"]) actioninClause = req["ActionTracking_test_Clause"];
@@ -189,7 +189,7 @@ const getActivity = async function (req, res) {
 const getCountry = async function (req, res) {
     try {
         const user = req.userDetails;
-        let spendinClause,savinginClause,actioninClause,inClause;
+        let spendinClause=``,savinginClause=``,actioninClause=``;
         if(req["SpendData_Clause"]) spendinClause = req["SpendData_Clause"];
         if(req["SavingData_2_Clause"]) savinginClause = req["SavingData_2_Clause"];
         if(req["ActionTracking_test_Clause"]) actioninClause = req["ActionTracking_test_Clause"];
