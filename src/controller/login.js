@@ -62,6 +62,8 @@ const signin = async function (req, res) {
         var access = await poolConnection.request().query(`SELECT *
         FROM [DevOps].[ExcessRights] WHERE Email = '${email}'`);
         access = access.recordset[0];
+        let isAdmin=false;
+        if(access.AccessType == "admin") isAdmin = true;
 
         // if(access.Access !== "All") access.Access = JSON.parse(access.Access);
 
@@ -77,7 +79,7 @@ const signin = async function (req, res) {
         const token = jwt.sign(obj,"spendAnalyticPlatform", { expiresIn: '10h' });
         poolConnection.close();
         console.log("disconnected");
-        return res.status(200).send({status:true,result:JSON.stringify(token), message:"Login successfully" });
+        return res.status(200).send({status:true,result:{token:JSON.stringify(token),isAuth:isAdmin}, message:"Login successfully" });
     } catch (e) {
         res.status(500).send({ status: false, message: e.message });
     }
@@ -235,19 +237,15 @@ const access = async function (req, res) {
 
         // let str2 = JSON.stringify(arr2);
 
-        // let updated = await poolConnection
-        //         .request()
-        //         .query(
-        //             `UPDATE DevOps.ExcessRights SET  Access = '${str2}' WHERE Email = 'mohit.raykwar@statxo.com'`
-        //         );
+        let updated = await poolConnection
+                .request()
+                .query(
+                    `UPDATE DevOps.ExcessRights SET  AccessType = 'admin' WHERE Email = 'prashant.yadav@statxo.com'`
+                );
 
-        // var data = await poolConnection.request().query(`SELECT *
-        // FROM [DevOps].[ExcessRights]`);
+        var data = await poolConnection.request().query(`SELECT *
+        FROM [DevOps].[ExcessRights]`);
 
-        var data = await poolConnection.request().query(`SELECT table_name
-        FROM INFORMATION_SCHEMA.TABLES
-        WHERE table_type = 'BASE TABLE'
-        AND table_schema = 'DevOps'`);
         
         poolConnection.close();
         console.log("disconnected");
