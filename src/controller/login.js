@@ -240,12 +240,13 @@ const access = async function (req, res) {
         // let updated = await poolConnection
         //         .request()
         //         .query(
-        //             `UPDATE DevOps.ExcessRights SET  Access = 'global' WHERE Email = 'prashant.yadav@statxo.com'`
+        //             `UPDATE DevOps.ExcessRights SET  Access = '{}' WHERE Email IN ('abhishek.singh@statxo.com','mohit.raykwar@statxo.com')`
         //         );
 
         var data = await poolConnection.request().query(`SELECT *
         FROM [DevOps].[ExcessRights]`);
 
+        data = data.recordset;
         
         poolConnection.close();
         console.log("disconnected");
